@@ -6,7 +6,7 @@ class DeployPlugin implements Plugin<Project> {
         // Add the 'greeting' extension object
         def extension = project.extensions.create('greeting', DeployPluginExtension)
         // Add a task that uses configuration from the extension object
-        project.task('hello') {
+        project.task('hello', type: Deploy) {
             doLast {
                 println extension.message
             }
