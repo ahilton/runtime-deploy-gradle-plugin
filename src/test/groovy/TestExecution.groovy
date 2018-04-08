@@ -19,22 +19,66 @@ class TestExecution  {
     }
 
     @Test
-    void test(){
-
+    void testHelloDefault(){
+//            apply plugin: 'fxoms.deploy'
         buildFile << """
-            task helloWorld {
-                doLast {
-                    println 'Hello world!'
-                }
+            plugins {
+                id 'fxoms.deploy'
             }
         """
 
         def result = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('helloWorld')
+                .withArguments('hello')
+                .withPluginClasspath()
                 .build()
 
-        assertTrue(result.output.contains('Hello world!'))
-        assertEquals(SUCCESS, result.task(":helloWorld").outcome)
+        println result.output
+        assertTrue(result.output.contains('Hello from GreetingPlugin'))
+        assertEquals(SUCCESS, result.task(":hello").outcome)
+    }
+
+    @Test
+    void testHelloWithArgs(){
+        buildFile << """
+            plugins {
+                id 'fxoms.deploy'
+            }
+
+            deploy.message = 'Hi from Gradle'
+        """
+
+        def result = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+                .withArguments('hello')
+                .withPluginClasspath()
+                .build()
+
+        println result.output
+        assertTrue(result.output.contains('Hi from Gradle'))
+        assertEquals(SUCCESS, result.task(":hello").outcome)
+    }
+
+    @Test
+    void testHelloConfiguredWithDSL(){
+        buildFile << """
+            plugins {
+                id 'fxoms.deploy'
+            }
+
+            deploy {
+                message = 'Hi from dsl'
+            }
+        """
+
+        def result = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+                .withArguments('hello')
+                .withPluginClasspath()
+                .build()
+
+        println result.output
+        assertTrue(result.output.contains('Hi from dsl'))
+        assertEquals(SUCCESS, result.task(":hello").outcome)
     }
 }
