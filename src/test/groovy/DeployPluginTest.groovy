@@ -10,6 +10,6 @@ class DeployPluginTest {
         Project project = ProjectBuilder.builder().build()
         project.pluginManager.apply DeployPlugin.class
 
-        assertTrue(project.tasks.hello instanceof Deploy)
+        assertTrue(project.tasks.hello instanceof DeployTask)
     }
 }

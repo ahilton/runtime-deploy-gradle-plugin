@@ -19,66 +19,81 @@ class TestExecution  {
     }
 
     @Test
-    void testHelloDefault(){
-//            apply plugin: 'fxoms.deploy'
+    void testDeployComponent(){
         buildFile << """
             plugins {
                 id 'fxoms.deploy'
+            }
+            
+            components {
+                stp {
+                    group = 'stpAdaptor'
+                }
+                breeze {
+                }
             }
         """
 
         def result = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('hello')
+                .withArguments('deployStp')
                 .withPluginClasspath()
                 .build()
 
         println result.output
-        assertTrue(result.output.contains('Hello from GreetingPlugin'))
-        assertEquals(SUCCESS, result.task(":hello").outcome)
+        assertTrue(result.output.contains('>>> Task deploy. component name: stp. group: stpAdaptor'))
+        assertEquals(SUCCESS, result.task(":deployStp").outcome)
     }
 
     @Test
-    void testHelloWithArgs(){
+    void testDeployAllComponents(){
         buildFile << """
             plugins {
                 id 'fxoms.deploy'
             }
-
-            deploy.message = 'Hi from Gradle'
+            
+            components {
+                stp {
+                    group = 'stpAdaptor'
+                }
+                breeze {
+                }
+            }
         """
 
         def result = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('hello')
+                .withArguments('deploy')
                 .withPluginClasspath()
                 .build()
 
         println result.output
-        assertTrue(result.output.contains('Hi from Gradle'))
-        assertEquals(SUCCESS, result.task(":hello").outcome)
+        assertTrue(result.output.contains('>>> Task deploy. component name: stp. group: stpAdaptor'))
+        assertEquals(SUCCESS, result.task(":deploy").outcome)
     }
 
     @Test
-    void testHelloConfiguredWithDSL(){
+    void testDeployFromCustomTask(){
         buildFile << """
             plugins {
                 id 'fxoms.deploy'
             }
-
-            deploy {
-                message = 'Hi from dsl'
+            task deployAlex( type : DeployTask ) {
+                component {
+                    name = 'breeze'                
+                    group = 'breeze-group'
+                }
             }
         """
 
         def result = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('hello')
+                .withArguments('deployAlex')
                 .withPluginClasspath()
                 .build()
 
         println result.output
-        assertTrue(result.output.contains('Hi from dsl'))
-        assertEquals(SUCCESS, result.task(":hello").outcome)
+        assertTrue(result.output.contains('>>> Task deploy. component name: stp. group: stpAdaptor'))
+        assertEquals(SUCCESS, result.task(":deployStp").outcome)
     }
 }

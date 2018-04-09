@@ -1,3 +1,3 @@
 class DeployPluginExtension {
-    String message = 'Hello from GreetingPlugin'
+    String defaultGroup = 'anz.markets.default'
 }

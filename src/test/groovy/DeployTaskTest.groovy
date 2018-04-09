@@ -8,7 +8,7 @@ class DeployTaskTest {
     @Test
     public void canAddTaskToProject() {
         Project project = ProjectBuilder.builder().build()
-        def task = project.task('greeting', type: Deploy)
-        assertTrue(task instanceof Deploy)
+        def task = project.task('greeting', type: DeployTask)
+        assertTrue(task instanceof DeployTask)
     }
 }
