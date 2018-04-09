@@ -1,40 +1,29 @@
-import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.TaskCollection
 
 class DeployPlugin implements Plugin<Project> {
     void apply(Project project) {
 
-        // Add the 'greeting' extension object
+        // Add deploy extension
         def extension = project.extensions.create('deploy', DeployPluginExtension)
 
-        // Create a container of Book instances
+        // Add the components container as an extension object
         def components = project.container(DeployableComponent)
-        components.withType(DeployableComponent.class, new Action<DeployableComponent>() {
-            @Override
-            void execute(DeployableComponent deployableComponent) {
-                project.task("deploy"+deployableComponent.name.capitalize(), type: DeployTask) {
-                    component = deployableComponent
-                }
+        project.extensions.components = components
+
+        // Create deployment task for each component
+        components.withType(DeployableComponent.class, { dc ->
+            project.task("deploy"+dc.name.capitalize(), type: DeployTask) {
+                component = dc
             }
         })
+
+        // Configure defaults
         components.all {
             group = extension.defaultGroup
         }
-        // Add the container as an extension object
-        project.extensions.components = components
 
-        // Add a task that uses configuration from the extension object
-        project.task('deploy') {
-//            doLast {
-////                def types = project.tasks.withType(DeployTask).each {
-////                    print it.
-////                }
-////                components.each { component ->
-////                    println "$component.name -> $component.group"
-////                }
-//            }
-        }.dependsOn(project.tasks.withType(DeployTask))
+        // Add a deployAll task which depends on all individual component deploy tasks
+        project.task('deployAll').dependsOn(project.tasks.withType(DeployTask))
     }
 }

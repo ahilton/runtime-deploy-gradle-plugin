@@ -20,5 +20,6 @@ class DeployTask extends DefaultTask {
         def fs = config.resolve()
         println fs
 
+        //TODO:: pass file and artifact id
     }
 }

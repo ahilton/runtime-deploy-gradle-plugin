@@ -60,6 +60,10 @@ class TestExecution  {
                 mavenCentral()
             }
             
+            deploy {
+                defaultGroup 'xyz'            
+            }
+            
             components {
                 stp {
                     group = 'stpAdaptor'
@@ -71,13 +75,13 @@ class TestExecution  {
 
         def result = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('deploy')
+                .withArguments('deployAll')
                 .withPluginClasspath()
                 .build()
 
         println result.output
         assertTrue(result.output.contains('>>> Task deploy. component name: stp. group: stpAdaptor'))
-        assertEquals(SUCCESS, result.task(":deploy").outcome)
+        assertEquals(SUCCESS, result.task(":deployAll").outcome)
     }
 
     @Test
