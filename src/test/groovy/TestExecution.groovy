@@ -31,7 +31,11 @@ class TestExecution  {
             
             components {
                 stp {
-                    group = 'stpAdaptor'
+                    id = 'guava'
+                    group = 'com.google.guava'
+                    version = 18.0
+                    extension = 'jar'
+                    isDeployable = false 
                 }
                 breeze {
                 }

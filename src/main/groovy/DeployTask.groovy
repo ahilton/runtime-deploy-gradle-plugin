@@ -11,12 +11,26 @@ class DeployTask extends DefaultTask {
 
     @TaskAction
     void performComponentDeploy() {
+        def taskName = getName()
         def c = component.get()
-        println " >>> Task deploy. component name: $c.name. group: $c.group"
 
+        if (!c.isDeployable){
+            println ">>> Task $taskName [$c.name]. Component is not deployable. Skipping."
+            return
+        }
+
+        // build dependency notation
+        def extension = c.extension==null?'':"@$c.extension"
+        def classifier = c.classifier==null?'':c.classifier
+        def dependency = "$c.group:$c.id:$c.version:$classifier$extension"
+
+
+        println " >>> Task $taskName [$c.name]. Resolving dependency: $dependency"
+
+        // resolve dependency
         def configName = "configuration$c.name"
         def config = project.configurations.create(configName)
-        project.dependencies.add(configName,"com.google.guava:guava:18.0")
+        project.dependencies.add(configName, dependency)
         def fs = config.resolve()
         println fs
 

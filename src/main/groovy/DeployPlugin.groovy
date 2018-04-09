@@ -21,6 +21,7 @@ class DeployPlugin implements Plugin<Project> {
         // Configure defaults
         components.all {
             group = extension.defaultGroup
+            isDeployable = extension.isDeployable
         }
 
         // Add a deployAll task which depends on all individual component deploy tasks
