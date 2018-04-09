@@ -13,5 +13,12 @@ class DeployTask extends DefaultTask {
     void performComponentDeploy() {
         def c = component.get()
         println " >>> Task deploy. component name: $c.name. group: $c.group"
+
+        def configName = "configuration$c.name"
+        def config = project.configurations.create(configName)
+        project.dependencies.add(configName,"com.google.guava:guava:18.0")
+        def fs = config.resolve()
+        println fs
+
     }
 }

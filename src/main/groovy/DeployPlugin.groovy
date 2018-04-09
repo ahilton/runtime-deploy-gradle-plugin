@@ -1,6 +1,7 @@
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskCollection
 
 class DeployPlugin implements Plugin<Project> {
     void apply(Project project) {
@@ -26,11 +27,14 @@ class DeployPlugin implements Plugin<Project> {
 
         // Add a task that uses configuration from the extension object
         project.task('deploy') {
-            doLast {
-                components.each { component ->
-                    println "$component.name -> $component.group"
-                }
-            }
-        }
+//            doLast {
+////                def types = project.tasks.withType(DeployTask).each {
+////                    print it.
+////                }
+////                components.each { component ->
+////                    println "$component.name -> $component.group"
+////                }
+//            }
+        }.dependsOn(project.tasks.withType(DeployTask))
     }
 }

@@ -25,6 +25,10 @@ class TestExecution  {
                 id 'fxoms.deploy'
             }
             
+            repositories {
+                mavenCentral()
+            }
+            
             components {
                 stp {
                     group = 'stpAdaptor'
@@ -50,6 +54,10 @@ class TestExecution  {
         buildFile << """
             plugins {
                 id 'fxoms.deploy'
+            }
+                       
+            repositories {
+                mavenCentral()
             }
             
             components {
