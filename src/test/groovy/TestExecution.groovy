@@ -22,7 +22,7 @@ class TestExecution  {
     void testDeployComponent(){
         buildFile << """
             plugins {
-                id 'fxoms.deploy'
+                id 'runtime.deploy'
             }
             
             repositories {
@@ -53,7 +53,7 @@ class TestExecution  {
     void testDeployAllComponents(){
         buildFile << """
             plugins {
-                id 'fxoms.deploy'
+                id 'runtime.deploy'
             }
                        
             repositories {
@@ -88,7 +88,7 @@ class TestExecution  {
     void testDeployFromCustomTask(){
         buildFile << """
             plugins {
-                id 'fxoms.deploy'
+                id 'runtime.deploy'
             }
             task deployAlex( type : DeployTask ) {
                 component {

@@ -1,3 +1,4 @@
 class DeployPluginExtension {
-    String defaultGroup = 'anz.markets.default'
+    String defaultGroup
+    Boolean isDeployable = true
 }
