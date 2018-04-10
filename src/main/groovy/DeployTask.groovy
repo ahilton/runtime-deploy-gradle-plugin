@@ -14,34 +14,34 @@ class DeployTask extends DefaultTask {
     @TaskAction
     void performComponentDeploy() {
         def taskName = getName()
-        println " >>> Task $taskName"
+        println "  --- $taskName ---"
 
         def c = component.get()
 
         if (!c.isDeployable){
-            println ">>> Task $taskName [$c.name]. Component is not deployable. Skipping."
+            println " --- $taskName --- [$c.name]. Component is not deployable. Skipping."
             return
         }
 
-        // deploy dependent components before deploying main component
+        // deploy dependent components
         c.dependencies.each {
             doDeploy(it)
         }
 
+        // deploy main component
         doDeploy(c)
     }
 
     boolean doDeploy(ArtifactDescriptor descriptor){
-        // [$c.name]. Resolving dependency: $dependency"
-        println " >>> Resolving "+descriptor.buildDependencyNotation()
-
         def dependencyNotation = descriptor.buildDependencyNotation()
+        println " >>> Resolving "+dependencyNotation
 
-        // resolve dependency
+        // Create a configuration against which the dependency will be resolved
         def id = descriptor.getNameAsGradleCompatibleIdentifier()
         def configName = "configuration$id"
         def config = project.configurations.create(configName)
         project.dependencies.add(configName, dependencyNotation)
+
         def fs = config.resolve()
         println fs
     }
