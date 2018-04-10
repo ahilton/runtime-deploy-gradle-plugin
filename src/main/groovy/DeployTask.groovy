@@ -1,3 +1,4 @@
+import dsl.DeployableComponent
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -19,16 +20,18 @@ class DeployTask extends DefaultTask {
             return
         }
 
-        // build dependency notation
-        def extension = c.extension==null?'':"@$c.extension"
-        def classifier = c.classifier==null?'':c.classifier
-        def dependency = "$c.group:$c.id:$c.version:$classifier$extension"
+        // attempt to deploy dependent components
+        c.dependencies.each {
+            println it.buildDependencyNotation()
+        }
 
+        def dependency = c.buildDependencyNotation()
 
         println " >>> Task $taskName [$c.name]. Resolving dependency: $dependency"
 
         // resolve dependency
-        def configName = "configuration$c.name"
+        def id = c.getNameAsGradleCompatibleIdentifier()
+        def configName = "configuration$id"
         def config = project.configurations.create(configName)
         project.dependencies.add(configName, dependency)
         def fs = config.resolve()

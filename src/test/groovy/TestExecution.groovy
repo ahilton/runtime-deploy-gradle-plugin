@@ -30,12 +30,18 @@ class TestExecution  {
             }
             
             components {
-                stp {
-                    id = 'guava'
+                guava {
                     group = 'com.google.guava'
                     version = 18.0
                     extension = 'jar'
-                    isDeployable = false 
+                    isDeployable = true 
+                    dependencies { 
+                        ins {
+                            group = 'com.google.guava'
+                            version = 18.0
+                            extension = 'jar'
+                        }
+                    }
                 }
                 breeze {
                 }
@@ -44,13 +50,13 @@ class TestExecution  {
 
         def result = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('deployStp')
+                .withArguments('deployGuava')
                 .withPluginClasspath()
                 .build()
 
         println result.output
-        assertTrue(result.output.contains('>>> Task deploy. component name: stp. group: stpAdaptor'))
-        assertEquals(SUCCESS, result.task(":deployStp").outcome)
+        assertTrue(result.output.contains(' >>> Task deployGuava [guava]. Resolving dependency: com.google.guava:guava:18.0:@jar'))
+        assertEquals(SUCCESS, result.task(":deployGuava").outcome)
     }
 
     @Test
