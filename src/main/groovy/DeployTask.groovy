@@ -1,4 +1,5 @@
-import dsl.DeployableComponent
+import dsl.component.ArtifactDescriptor
+import dsl.component.DeployableComponent
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -13,6 +14,8 @@ class DeployTask extends DefaultTask {
     @TaskAction
     void performComponentDeploy() {
         def taskName = getName()
+        println " >>> Task $taskName"
+
         def c = component.get()
 
         if (!c.isDeployable){
@@ -20,23 +23,26 @@ class DeployTask extends DefaultTask {
             return
         }
 
-        // attempt to deploy dependent components
+        // deploy dependent components before deploying main component
         c.dependencies.each {
-            println it.buildDependencyNotation()
+            doDeploy(it)
         }
 
-        def dependency = c.buildDependencyNotation()
+        doDeploy(c)
+    }
 
-        println " >>> Task $taskName [$c.name]. Resolving dependency: $dependency"
+    boolean doDeploy(ArtifactDescriptor descriptor){
+        // [$c.name]. Resolving dependency: $dependency"
+        println " >>> Resolving "+descriptor.buildDependencyNotation()
+
+        def dependencyNotation = descriptor.buildDependencyNotation()
 
         // resolve dependency
-        def id = c.getNameAsGradleCompatibleIdentifier()
+        def id = descriptor.getNameAsGradleCompatibleIdentifier()
         def configName = "configuration$id"
         def config = project.configurations.create(configName)
-        project.dependencies.add(configName, dependency)
+        project.dependencies.add(configName, dependencyNotation)
         def fs = config.resolve()
         println fs
-
-        //TODO:: pass file and artifact id
     }
 }

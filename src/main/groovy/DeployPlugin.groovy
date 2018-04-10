@@ -1,31 +1,39 @@
-import dsl.ArtifactDescriptor
-import dsl.DeployableComponent
+import dsl.component.ArtifactDescriptor
+import dsl.component.DeployableComponent
+import dsl.plugin.DeployPluginExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class DeployPlugin implements Plugin<Project> {
     void apply(Project project) {
 
-        // Add deploy extension
-        def extension = project.extensions.create('deploy', DeployPluginExtension)
+        def deployPluginExtension = project.extensions.create('deploy', DeployPluginExtension)
 
         // Add the components container as an extension object
-        def components = project.container(DeployableComponent)
-        project.extensions.components = components
+        def componentContainer = project.container(DeployableComponent)
+        project.extensions.components = componentContainer
 
         // Create deployment task for each component
-        components.withType(DeployableComponent.class, { dc ->
+        componentContainer.withType(DeployableComponent.class, { dc ->
             project.task("deploy"+dc.getNameAsGradleCompatibleIdentifier(), type: DeployTask) {
                 component = dc
             }
         })
 
+        def dependencyContainer = project.container(ArtifactDescriptor)
+
         // Configure defaults
-        components.all {
-            group = extension.defaultGroup
-            isDeployable = extension.isDeployable
+        componentContainer.all {
+            group = deployPluginExtension.defaultGroup
+            extension = deployPluginExtension.defaultExtension
+            isDeployable = deployPluginExtension.isDeployable
             // Support dsl nesting. http://mrhaki.blogspot.com.au/2016/02/gradle-goodness-using-nested-domain.html?m=1
-            dependencies = project.container(ArtifactDescriptor)
+            dependencies = dependencyContainer
+        }
+
+        dependencyContainer.all {
+            group = deployPluginExtension.defaultGroup
+            extension = deployPluginExtension.defaultExtension
         }
 
         // Add a deployAll task which depends on all individual component deploy tasks

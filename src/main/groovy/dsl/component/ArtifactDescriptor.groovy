@@ -1,4 +1,4 @@
-package dsl
+package dsl.component
 
 class ArtifactDescriptor {
 
@@ -14,11 +14,21 @@ class ArtifactDescriptor {
     }
 
     /*
-        group:id:version:classifier@extension
+     *   group:id:version:classifier@extension
      */
     def buildDependencyNotation() {
         def extensionNotation = extension == null ? '' : "@$extension"
         def classifierNotation = classifier == null ? '' : classifier
         return "$group:$name:$version:$classifierNotation$extensionNotation"
+    }
+
+    /*
+     *  Convert kebab-case into capitalized CamelCase for use as a gradle identifier:
+     *
+     *      taskCamelCase
+     *      configurationCamelCase
+     */
+    String getNameAsGradleCompatibleIdentifier(){
+        return name.replaceAll(/-\w/){ it[1].toUpperCase() }.capitalize()
     }
 }

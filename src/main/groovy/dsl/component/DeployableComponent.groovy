@@ -1,4 +1,4 @@
-package dsl
+package dsl.component
 
 import org.gradle.api.NamedDomainObjectContainer
 
@@ -14,15 +14,5 @@ class DeployableComponent extends ArtifactDescriptor{
 
     DeployableComponent(String name) {
         super(name)
-    }
-
-    /*
-     *  Convert kebab-case into capitalized CamelCase for use as a gradle identifier:
-     *
-     *      taskCamelCase
-     *      configurationCamelCase
-     */
-    String getNameAsGradleCompatibleIdentifier(){
-        return name.replaceAll(/-\w/){ it[1].toUpperCase() }.capitalize()
     }
 }

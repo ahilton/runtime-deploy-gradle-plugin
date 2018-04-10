@@ -29,17 +29,20 @@ class TestExecution  {
                 mavenCentral()
             }
             
+            deploy {
+                defaultGroup = 'com.google.guava'
+                defaultExtension = 'jar'
+            }
+            
             components {
                 guava {
-                    group = 'com.google.guava'
                     version = 18.0
-                    extension = 'jar'
-                    isDeployable = true 
+                    isDeployable = true
+                    
                     dependencies { 
-                        ins {
-                            group = 'com.google.guava'
-                            version = 18.0
-                            extension = 'jar'
+                        'eclipse-collections-api' {
+                            version = '9.1.0'
+                            group = 'org.eclipse.collections'
                         }
                     }
                 }
@@ -55,7 +58,8 @@ class TestExecution  {
                 .build()
 
         println result.output
-        assertTrue(result.output.contains(' >>> Task deployGuava [guava]. Resolving dependency: com.google.guava:guava:18.0:@jar'))
+        assertTrue(result.output.contains(' >>> Resolving org.eclipse.collections:eclipse-collections-api:9.1.0:@jar'))
+        assertTrue(result.output.contains(' >>> Resolving com.google.guava:guava:18.0:@jar'))
         assertEquals(SUCCESS, result.task(":deployGuava").outcome)
     }
 
@@ -65,20 +69,23 @@ class TestExecution  {
             plugins {
                 id 'runtime.deploy'
             }
-                       
+            
             repositories {
                 mavenCentral()
             }
             
             deploy {
-                defaultGroup 'xyz'            
+                defaultGroup = 'com.google.guava'
+                defaultExtension = 'jar'
             }
             
             components {
-                stp {
-                    group = 'stpAdaptor'
+                guava {
+                    version = '18.0'
                 }
-                breeze {
+                'eclipse-collections-api' {
+                    version = '9.1.0'
+                    group = 'org.eclipse.collections'
                 }
             }
         """
@@ -90,32 +97,10 @@ class TestExecution  {
                 .build()
 
         println result.output
-        assertTrue(result.output.contains('>>> Task deploy. component name: stp. group: stpAdaptor'))
+        assertTrue(result.output.contains(' >>> Resolving org.eclipse.collections:eclipse-collections-api:9.1.0:@jar'))
+        assertTrue(result.output.contains(' >>> Resolving com.google.guava:guava:18.0:@jar'))
+        assertEquals(SUCCESS, result.task(":deployEclipseCollectionsApi").outcome)
+        assertEquals(SUCCESS, result.task(":deployGuava").outcome)
         assertEquals(SUCCESS, result.task(":deployAll").outcome)
-    }
-
-    @Test
-    void testDeployFromCustomTask(){
-        buildFile << """
-            plugins {
-                id 'runtime.deploy'
-            }
-            task deployAlex( type : DeployTask ) {
-                component {
-                    name = 'breeze'                
-                    group = 'breeze-group'
-                }
-            }
-        """
-
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments('deployAlex')
-                .withPluginClasspath()
-                .build()
-
-        println result.output
-        assertTrue(result.output.contains('>>> Task deploy. component name: stp. group: stpAdaptor'))
-        assertEquals(SUCCESS, result.task(":deployStp").outcome)
     }
 }

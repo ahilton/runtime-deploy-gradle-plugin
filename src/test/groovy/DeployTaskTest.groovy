@@ -6,7 +6,7 @@ import static org.junit.Assert.*
 class DeployTaskTest {
 
     @Test
-    public void canAddTaskToProject() {
+    void canAddTaskToProject() {
         Project project = ProjectBuilder.builder().build()
         def task = project.task('greeting', type: DeployTask)
         assertTrue(task instanceof DeployTask)
